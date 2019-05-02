@@ -32,7 +32,7 @@
 #include "stm32f7xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+ void userFunction(void);
 /* USER CODE END INCLUDE */
 
 /** @addtogroup USBH_OTG_DRIVER

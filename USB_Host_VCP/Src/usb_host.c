@@ -33,6 +33,7 @@
 /* Private variables ---------------------------------------------------------*/
 uint8_t rx_buffer[100];
 uint8_t tx_buffer[] = "Test VCP host\r\n";
+extern UART_HandleTypeDef huart3;
 /* USER CODE END PV */
 
 /* USER CODE BEGIN PFP */
@@ -48,7 +49,19 @@ ApplicationTypeDef Appli_state = APPLICATION_IDLE;
  * -- Insert your variables declaration here --
  */
 /* USER CODE BEGIN 0 */
-
+void userFunction(void)
+{
+	static uint32_t i=0;
+	if (Appli_state==APPLICATION_READY)
+	{
+		if ((HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_13)==GPIO_PIN_SET)&&(i>0xFFFF))
+		{
+			USBH_CDC_Transmit(&hUsbHostFS, tx_buffer, 15);
+			i=0;
+		}
+		else i++;
+	}
+}
 /* USER CODE END 0 */
 
 /*
@@ -60,7 +73,17 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
  * -- Insert your external function declaration here --
  */
 /* USER CODE BEGIN 1 */
+void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost)
+{
+	USBH_CDC_Receive(phost, rx_buffer, 15);
+	HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_14);
+}
 
+void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost)
+{
+	HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_7);
+	HAL_UART_Transmit(&huart3, rx_buffer, 15, 0x1000);
+}
 /* USER CODE END 1 */
 
 /**
