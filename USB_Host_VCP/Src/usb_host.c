@@ -54,7 +54,7 @@ void userFunction(void)
 	static uint32_t i=0;
 	if (Appli_state==APPLICATION_READY)
 	{
-		if ((HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_13)==GPIO_PIN_SET)&&(i>0xFFFF))
+		if ((HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_13)==GPIO_PIN_SET)&&(i>0xFFFFF))
 		{
 			USBH_CDC_Transmit(&hUsbHostFS, tx_buffer, 15);
 			i=0;
