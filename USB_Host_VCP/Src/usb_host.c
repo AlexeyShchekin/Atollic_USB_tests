@@ -52,10 +52,11 @@ ApplicationTypeDef Appli_state = APPLICATION_IDLE;
 void userFunction(void)
 {
 	static uint32_t i=0;
-	if (Appli_state==APPLICATION_READY)
+	if (Appli_state==APPLICATION_READY ||Appli_state==APPLICATION_START)
 	{
 		if ((HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_13)==GPIO_PIN_SET)&&(i>0xFFFFF))
 		{
+			HAL_UART_Transmit(&huart3, "Button pressed\r\n", 16, 0x1000);
 			USBH_CDC_Transmit(&hUsbHostFS, tx_buffer, 15);
 			i=0;
 		}

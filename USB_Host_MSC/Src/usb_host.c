@@ -71,26 +71,26 @@ void userFunction(void)
 			sprintf(name,"%d.txt",counter++);
 			if (f_open(&MyFile,name,FA_CREATE_ALWAYS |FA_WRITE)!=FR_OK)
 			{
-				uart_length=sprintf(uart_tx_buffer, "Cannot open %s file \n", name);
+				uart_length=sprintf(uart_tx_buffer, "Cannot open %s file \r\n", name);
 				HAL_UART_Transmit(&huart3, uart_tx_buffer, (uint16_t)uart_length,1000);
 			}
 			else
 			{
-				uart_length=sprintf(uart_tx_buffer, "file %s created \n", name);
+				uart_length=sprintf(uart_tx_buffer, "file %s created \r\n", name);
 				HAL_UART_Transmit(&huart3, uart_tx_buffer, (uint16_t)uart_length,1000);
 
 				res = f_write(&MyFile,wtext,sizeof(wtext),&bytesWritten);
 				f_close(&MyFile);
 
 				if (bytesWritten==0 || res!=FR_OK){
-					uart_length=sprintf(uart_tx_buffer, "Write error\n");
+					uart_length=sprintf(uart_tx_buffer, "Write error\r\n");
 					HAL_UART_Transmit(&huart3, uart_tx_buffer, (uint16_t)uart_length,1000);
 				}
 				else
 				{
 					if (f_open(&MyFile,name,FA_READ) != FR_OK ) {
 						/*file open failure*/
-						uart_length=sprintf(uart_tx_buffer,"Cannot open %s file for verify \n", name);
+						uart_length=sprintf(uart_tx_buffer,"Cannot open %s file for verify \r\n", name);
 						HAL_UART_Transmit(&huart3, uart_tx_buffer,(uint16_t)uart_length, 1000);
 					} else {
 						/*Read file content. Use variable : rtext, bytesread*/
@@ -98,17 +98,18 @@ void userFunction(void)
 
 						if ((bytesread == 0) || (res != FR_OK)) {
 							/*read fail*/
-							uart_length=sprintf(uart_tx_buffer,"Cannot read file for verification \n");
+							uart_length=sprintf(uart_tx_buffer,"Cannot read file for verification \r\n");
 							HAL_UART_Transmit(&huart3, uart_tx_buffer,(uint16_t)uart_length, 1000);
 						} else {
 							/*read success*/
-							HAL_UART_Transmit(&huart3, rtext,sizeof(rtext), 1000);
+							HAL_UART_Transmit(&huart3, rtext, bytesread, 1000);
+							HAL_UART_Transmit(&huart3, "\r\n", 2, 1000);
 						}
 
 						/*close the file*/
 						if (f_close(&MyFile) != FR_OK) {
 							/*check number of written bytes*/
-							uart_length=sprintf(uart_tx_buffer, "fclose fail \n");
+							uart_length=sprintf(uart_tx_buffer, "fclose fail \r\n");
 							HAL_UART_Transmit(&huart3, uart_tx_buffer,(uint16_t)uart_length, 1000);
 							while (1){}
 						}
@@ -116,12 +117,12 @@ void userFunction(void)
 					/* Compare read data with the expected data */
 					if ((bytesread == bytesWritten)) {
 						/*verification success full - number of written bytes is equal to number of read bytes*/
-						uart_length=sprintf(uart_tx_buffer,"verification OK - read number of bytes is equal to written number of bytes \n");
+						uart_length=sprintf(uart_tx_buffer,"verification OK - read number of bytes is equal to written number of bytes \r\n");
 						HAL_UART_Transmit(&huart3, uart_tx_buffer,((uint16_t)uart_length), 5000);
 
 					} else {
 						/*verification failed - number of written bytes is not equal to number of read bytes*/
-						uart_length=sprintf(uart_tx_buffer, "verify fail \n");
+						uart_length=sprintf(uart_tx_buffer, "verify fail \r\n");
 						HAL_UART_Transmit(&huart3, uart_tx_buffer,(uint16_t)uart_length, 1000);
 					}
 				}
